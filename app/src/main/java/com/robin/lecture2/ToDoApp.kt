@@ -10,15 +10,15 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-data class TodoItem(
+data class NoteItem(
     val id: Int,
     var title: String,
     var subtitle: String,
@@ -27,36 +27,36 @@ data class TodoItem(
 
 
 @Composable
-fun TodoApp() {
+fun NoteApp() {
     val navController = rememberNavController()
-    val todoList = remember { mutableStateListOf<TodoItem>() }
+    val noteList = remember { mutableStateListOf<NoteItem>() }
 
-    NavHost(navController = navController, startDestination = "todoList") {
-        composable("todoList") { TodoListScreen(navController, todoList) }
-        composable("addTodo") { AddTodoScreen(navController, todoList) }
-        composable("editTodo/{itemId}") { backStackEntry ->
+    NavHost(navController = navController, startDestination = "noteList") {
+        composable("noteList") { NoteListScreen(navController, noteList) }
+        composable("addNote") { AddNoteScreen(navController, noteList) }
+        composable("editNote/{itemId}") { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId")?.toIntOrNull()
-            val todoItem = todoList.find { it.id == itemId }
-            todoItem?.let { EditTodoScreen(navController, it) }
+            val noteItem = noteList.find { it.id == itemId }
+            noteItem?.let { EditNoteScreen(navController, it) }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListScreen(navController: NavController, todoList: MutableList<TodoItem>) {
+fun NoteListScreen(navController: NavController, noteList: MutableList<NoteItem>) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Todo List") })
+            TopAppBar(title = { Text("Note List") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("addTodo") }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Todo")
+            FloatingActionButton(onClick = { navController.navigate("addNote") }) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Note")
             }
         }
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
-            items(todoList) { item ->
+            items(noteList) { item ->
                 ListItem(
                     leadingContent = {
                         Checkbox(
@@ -69,14 +69,14 @@ fun TodoListScreen(navController: NavController, todoList: MutableList<TodoItem>
                     trailingContent = {
                         Row {
                             IconButton(
-                                onClick = { navController.navigate("editTodo/${item.id}") }
+                                onClick = { navController.navigate("editNote/${item.id}") }
                             ) {
-                                Icon(Icons.Filled.Edit, contentDescription = "Edit Todo")
+                                Icon(Icons.Filled.Edit, contentDescription = "Edit Note")
                             }
                             IconButton(
-                                onClick = { todoList.remove(item) }
+                                onClick = { noteList.remove(item) }
                             ) {
-                                Icon(Icons.Filled.Delete, contentDescription = "Delete Todo")
+                                Icon(Icons.Filled.Delete, contentDescription = "Delete Note")
                             }
                         }
                     }
@@ -90,7 +90,7 @@ fun TodoListScreen(navController: NavController, todoList: MutableList<TodoItem>
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTodoScreen(navController: NavController, todoList: MutableList<TodoItem>) {
+fun AddNoteScreen(navController: NavController, todoList: MutableList<NoteItem>) {
     var title by remember { mutableStateOf("") }
     var subtitle by remember { mutableStateOf("") }
 
@@ -102,7 +102,7 @@ fun AddTodoScreen(navController: NavController, todoList: MutableList<TodoItem>)
                     IconButton(
                         onClick = {
                             if (title.isNotBlank() && subtitle.isNotBlank()) {
-                                todoList.add(TodoItem(id = todoList.size, title = title, subtitle = subtitle))
+                                todoList.add(NoteItem(id = todoList.size, title = title, subtitle = subtitle))
                                 navController.popBackStack()
                             }
                         }) {
@@ -133,7 +133,7 @@ fun AddTodoScreen(navController: NavController, todoList: MutableList<TodoItem>)
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 if (title.isNotBlank() && subtitle.isNotBlank()) {
-                    todoList.add(TodoItem(id = todoList.size, title = title, subtitle = subtitle))
+                    todoList.add(NoteItem(id = todoList.size, title = title, subtitle = subtitle))
                     navController.popBackStack()
                 }
             }) {
@@ -145,9 +145,9 @@ fun AddTodoScreen(navController: NavController, todoList: MutableList<TodoItem>)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditTodoScreen(navController: NavController, todoItem: TodoItem) {
-    var title by remember { mutableStateOf(todoItem.title) }
-    var subtitle by remember { mutableStateOf(todoItem.subtitle) }
+fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
+    var title by remember { mutableStateOf(noteItem.title) }
+    var subtitle by remember { mutableStateOf(noteItem.subtitle) }
 
     Scaffold(
         topBar = {
@@ -182,8 +182,8 @@ fun EditTodoScreen(navController: NavController, todoItem: TodoItem) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 if (title.isNotBlank() && subtitle.isNotBlank()) {
-                    todoItem.title = title
-                    todoItem.subtitle = subtitle
+                    noteItem.title = title
+                    noteItem.subtitle = subtitle
                     navController.popBackStack()
                 }
             }) {
@@ -191,4 +191,10 @@ fun EditTodoScreen(navController: NavController, todoItem: TodoItem) {
             }
         }
     }
+}
+
+@Preview (showBackground = true)
+@Composable
+private fun NotesAppPreview() {
+    NoteApp()
 }
