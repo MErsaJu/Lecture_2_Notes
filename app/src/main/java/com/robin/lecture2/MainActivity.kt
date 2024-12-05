@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmallTopAppBarExample() {
@@ -45,7 +45,7 @@ fun SmallTopAppBarExample() {
         Text("Hej hej")
     }
 }
-
+*/
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {

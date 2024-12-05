@@ -11,8 +11,15 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,7 +38,8 @@ fun NoteApp() {
     val navController = rememberNavController()
     val noteList = remember { mutableStateListOf<NoteItem>() }
 
-    NavHost(navController = navController, startDestination = "noteList") {
+    NavHost(navController = navController,
+            startDestination = "noteList") {
         composable("noteList") { NoteListScreen(navController, noteList) }
         composable("addNote") { AddNoteScreen(navController, noteList) }
         composable("editNote/{itemId}") { backStackEntry ->
@@ -44,13 +52,35 @@ fun NoteApp() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteListScreen(navController: NavController, noteList: MutableList<NoteItem>) {
+fun NoteListScreen(navController: NavController,
+                   noteList: MutableList<NoteItem>) {
     Scaffold(
+        containerColor = Color(0xFFE3B7C9),
         topBar = {
-            TopAppBar(title = { Text("Note List") })
+            TopAppBar(
+                title = { Text(
+                text = "Note List",
+                color = Color.White,
+                    style = TextStyle(
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(
+                            color = Color(0xFFA54A6F),
+                            offset = Offset(4f, 8f),
+                            blurRadius = 4f
+                        )
+                    ),
+                fontStyle = FontStyle.Italic) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFE3B7C9))
+                )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("addNote") }) {
+            FloatingActionButton(onClick = {
+                navController.navigate("addNote") },
+                containerColor = Color(0xFFA54A6F),
+                contentColor = Color.White
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Note")
             }
         }
@@ -90,40 +120,60 @@ fun NoteListScreen(navController: NavController, noteList: MutableList<NoteItem>
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNoteScreen(navController: NavController, todoList: MutableList<NoteItem>) {
+fun AddNoteScreen(navController: NavController,
+                  noteList: MutableList<NoteItem>) {
     var title by remember { mutableStateOf("") }
+    var titleError by remember { mutableStateOf(false) }
     var subtitle by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Todo") },
+                title = { Text("Add new Note") },
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (title.isNotBlank() && subtitle.isNotBlank()) {
-                                todoList.add(NoteItem(id = todoList.size, title = title, subtitle = subtitle))
+                            if (title.isNotBlank()
+                                && subtitle.isNotBlank()) {
+                                noteList.add(NoteItem(
+                                    id = noteList.size,
+                                    title = title,
+                                    subtitle = subtitle))
                                 navController.popBackStack()
                             }
                         }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFE3B7C9)
+                )
             )
-        }
+        },
+        containerColor = Color(0xFFE3B7C9)
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
         ) {
             TextField(
                 value = title,
-                onValueChange = { title = it },
-                label = { Text("Todo") }
+                onValueChange = {
+                    title = it
+                    titleError = title.length !in 3..50
+                },
+                label = { Text("Note") },
+                isError = titleError
             )
+            if (titleError) {
+                Text(
+                    text = "Title must contain 3-50 characters",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = subtitle,
@@ -132,12 +182,23 @@ fun AddNoteScreen(navController: NavController, todoList: MutableList<NoteItem>)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
-                if (title.isNotBlank() && subtitle.isNotBlank()) {
-                    todoList.add(NoteItem(id = todoList.size, title = title, subtitle = subtitle))
+                if (title.isNotBlank()
+                    && subtitle.isNotBlank()
+                    && title.length in 3..50
+                    && subtitle.length <= 120) {
+                    noteList.add(NoteItem(id = noteList.size, title = title, subtitle = subtitle))
                     navController.popBackStack()
+                } else {
+                    titleError = true
                 }
-            }) {
-                Text("Add Todo")
+            },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFA54A6F), // Same as FloatingActionButton color
+                    contentColor = Color.White         // Text color
+                ),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            ) {
+                Text("Add Note")
             }
         }
     }
@@ -147,32 +208,54 @@ fun AddNoteScreen(navController: NavController, todoList: MutableList<NoteItem>)
 @Composable
 fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
     var title by remember { mutableStateOf(noteItem.title) }
+    var titleError by remember { mutableStateOf(false) }
     var subtitle by remember { mutableStateOf(noteItem.subtitle) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Edit Todo") },
+                title = { Text("Edit Note") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        if (title.isNotBlank() && subtitle.isNotBlank() && title.length in 3..50 && subtitle.length <= 120) {
+                            noteItem.title = title
+                            noteItem.subtitle = subtitle
+                            navController.popBackStack()
+                        } else {
+                            titleError = true
+                        }
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFE3B7C9)
+                )
             )
-        }
+        },
+        containerColor = Color(0xFFE3B7C9)
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
         ) {
             TextField(
                 value = title,
-                onValueChange = { title = it },
-                label = { Text("Todo") }
+                onValueChange = {
+                    title = it
+                    titleError = title.length !in 3..50
+                },
+                label = { Text("Note") },
+                isError = titleError
             )
+            if (titleError) {
+                Text(
+                    text = "Title must contain 3-50 characters",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = subtitle,
@@ -181,19 +264,27 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
-                if (title.isNotBlank() && subtitle.isNotBlank()) {
+                if (title.isNotBlank() && subtitle.isNotBlank() && title.length in 3..50 && subtitle.length <= 120) {
                     noteItem.title = title
                     noteItem.subtitle = subtitle
                     navController.popBackStack()
+                } else {
+                    titleError = true
                 }
-            }) {
-                Text("Save Todo")
+            },
+                colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFA54A6F), // Same as FloatingActionButton color
+                contentColor = Color.White         // Text color
+            ),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            ) {
+                Text("Save Note")
             }
         }
     }
 }
 
-@Preview (showBackground = true)
+@Preview
 @Composable
 private fun NotesAppPreview() {
     NoteApp()
