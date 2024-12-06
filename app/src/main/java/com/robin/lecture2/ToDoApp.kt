@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,8 +97,16 @@ fun NoteListScreen(navController: NavController,
                             onCheckedChange = {
                                 item.check.value = !item.check.value
                         })},
-                    headlineContent = { Text(item.title) },
-                    supportingContent = { Text(item.subtitle)},
+                    headlineContent = { Text(
+                        item.title,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    ) },
+                    supportingContent = { Text(
+                        item.subtitle,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )},
                     trailingContent = {
                         Row {
                             IconButton(
@@ -127,6 +136,7 @@ fun AddNoteScreen(navController: NavController,
     var title by remember { mutableStateOf("") }
     var titleError by remember { mutableStateOf(false) }
     var subtitle by remember { mutableStateOf("") }
+    var subtitleError by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -181,9 +191,20 @@ fun AddNoteScreen(navController: NavController,
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = subtitle,
-                onValueChange = { subtitle = it },
-                label = { Text("Details") }
+                onValueChange = {
+                    subtitle = it
+                    subtitleError = subtitle.length > 120
+                },
+                label = { Text("Details") },
+                isError = subtitleError
             )
+            if (subtitleError) {
+                Text(
+                    text = "Details text must not exceed 120 characters",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 if (title.isNotBlank()
@@ -194,6 +215,7 @@ fun AddNoteScreen(navController: NavController,
                     navController.popBackStack()
                 } else {
                     titleError = true
+                    subtitleError = true
                 }
             },
                 colors = ButtonDefaults.buttonColors(
@@ -214,6 +236,7 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
     var title by remember { mutableStateOf(noteItem.title) }
     var titleError by remember { mutableStateOf(false) }
     var subtitle by remember { mutableStateOf(noteItem.subtitle) }
+    var subtitleError by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -265,9 +288,20 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = subtitle,
-                onValueChange = { subtitle = it },
-                label = { Text("Details") }
+                onValueChange = {
+                    subtitle = it
+                    subtitleError = subtitle.length > 120
+                },
+                label = { Text("Details") },
+                isError = subtitleError
             )
+            if (subtitleError) {
+            Text(
+                text = "Details text must not exceed 120 characters",
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 if (title.isNotBlank() && subtitle.isNotBlank() && title.length in 3..50 && subtitle.length <= 120) {
@@ -276,6 +310,7 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
                     navController.popBackStack()
                 } else {
                     titleError = true
+                    subtitleError = true
                 }
             },
                 colors = ButtonDefaults.buttonColors(
@@ -288,10 +323,4 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun NotesAppPreview() {
-    NoteApp()
 }
