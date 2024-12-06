@@ -1,6 +1,7 @@
 package com.robin.lecture2
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -157,6 +159,8 @@ fun AddNoteScreen(navController: NavController,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
             TextField(
                 value = title,
@@ -164,7 +168,7 @@ fun AddNoteScreen(navController: NavController,
                     title = it
                     titleError = title.length !in 3..50
                 },
-                label = { Text("Note") },
+                label = { Text("Title") },
                 isError = titleError
             )
             if (titleError) {
@@ -196,7 +200,7 @@ fun AddNoteScreen(navController: NavController,
                     containerColor = Color(0xFFA54A6F), // Same as FloatingActionButton color
                     contentColor = Color.White         // Text color
                 ),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth(0.5f).padding(horizontal = 16.dp)
             ) {
                 Text("Add Note")
             }
@@ -239,6 +243,8 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
             TextField(
                 value = title,
@@ -276,7 +282,7 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
                 containerColor = Color(0xFFA54A6F), // Same as FloatingActionButton color
                 contentColor = Color.White         // Text color
             ),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth(0.5f).padding(horizontal = 16.dp)
             ) {
                 Text("Save Note")
             }
