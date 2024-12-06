@@ -1,5 +1,6 @@
 package com.robin.lecture2
 
+import android.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -34,7 +34,6 @@ data class NoteItem(
     var subtitle: String,
     val check: MutableState<Boolean> = mutableStateOf(false)
 )
-
 
 @Composable
 fun NoteApp() {
@@ -73,7 +72,8 @@ fun NoteListScreen(navController: NavController,
                             blurRadius = 4f
                         )
                     ),
-                fontStyle = FontStyle.Italic) },
+                fontStyle = FontStyle.Italic)
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFFE3B7C9))
                 )
@@ -96,24 +96,26 @@ fun NoteListScreen(navController: NavController,
                     headlineContent = { Text(
                         item.title,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color(0xFFA54A6F)
                     ) },
                     supportingContent = { Text(
                         item.subtitle,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color(0xFFA54A6F)
                     )},
                     trailingContent = {
                         Row {
                             IconButton(
                                 onClick = { navController.navigate("editNote/${item.id}") }
                             ) {
-                                Icon(Icons.Filled.Edit, contentDescription = "Edit Note")
+                                Icon(Icons.Filled.Edit, contentDescription = "Edit Note", tint = Color(0xFFA54A6F))
                             }
                             IconButton(
                                 onClick = { noteList.remove(item) }
                             ) {
-                                Icon(Icons.Filled.Delete, contentDescription = "Delete Note")
+                                Icon(Icons.Filled.Delete, contentDescription = "Delete Note", tint = Color(0xFFA54A6F))
                             }
                         }
                     }
@@ -137,7 +139,18 @@ fun AddNoteScreen(navController: NavController,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add new Note") },
+                title = { Text("Add new Note",
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(
+                            color = Color(0xFFA54A6F),
+                            offset = Offset(4f, 8f),
+                            blurRadius = 4f
+                        )
+                    ),
+                    fontStyle = FontStyle.Italic) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -151,7 +164,7 @@ fun AddNoteScreen(navController: NavController,
                             }
                         }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back")
+                            contentDescription = "Back", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -174,8 +187,15 @@ fun AddNoteScreen(navController: NavController,
                     title = it
                     titleError = title.length !in 3..50
                 },
-                label = { Text("Title") },
-                isError = titleError
+                label = { Text("Title", color = Color(0xFFA54A6F)) },
+                isError = titleError,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFFA54A6F),
+                    unfocusedTextColor = Color(0xFFA54A6F),
+                    cursorColor = Color(0xFFA54A6F),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
             if (titleError) {
                 Text(
@@ -191,8 +211,15 @@ fun AddNoteScreen(navController: NavController,
                     subtitle = it
                     subtitleError = subtitle.length > 120
                 },
-                label = { Text("Details") },
-                isError = subtitleError
+                label = { Text("Details", color = Color(0xFFA54A6F)) },
+                isError = subtitleError,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFFA54A6F),
+                    unfocusedTextColor = Color(0xFFA54A6F),
+                    cursorColor = Color(0xFFA54A6F),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
             if (subtitleError) {
                 Text(
@@ -237,7 +264,18 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Edit Note") },
+                title = { Text("Edit Note",
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(
+                            color = Color(0xFFA54A6F),
+                            offset = Offset(4f, 8f),
+                            blurRadius = 4f
+                        )
+                    ),
+                    fontStyle = FontStyle.Italic) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (title.isNotBlank() && subtitle.isNotBlank() && title.length in 3..50 && subtitle.length <= 120) {
@@ -248,7 +286,7 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
                             titleError = true
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -271,8 +309,15 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
                     title = it
                     titleError = title.length !in 3..50
                 },
-                label = { Text("Note") },
-                isError = titleError
+                label = { Text("Note", color = Color(0xFFA54A6F)) },
+                isError = titleError,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFFA54A6F),
+                    unfocusedTextColor = Color(0xFFA54A6F),
+                    cursorColor = Color(0xFFA54A6F),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
             if (titleError) {
                 Text(
@@ -288,8 +333,15 @@ fun EditNoteScreen(navController: NavController, noteItem: NoteItem) {
                     subtitle = it
                     subtitleError = subtitle.length > 120
                 },
-                label = { Text("Details") },
-                isError = subtitleError
+                label = { Text("Details", color = Color(0xFFA54A6F)) },
+                isError = subtitleError,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFFA54A6F),
+                    unfocusedTextColor = Color(0xFFA54A6F),
+                    cursorColor = Color(0xFFA54A6F),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
             if (subtitleError) {
             Text(
