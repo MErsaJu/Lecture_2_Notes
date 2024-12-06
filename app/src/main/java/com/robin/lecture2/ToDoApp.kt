@@ -1,6 +1,5 @@
 package com.robin.lecture2
 
-import android.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
