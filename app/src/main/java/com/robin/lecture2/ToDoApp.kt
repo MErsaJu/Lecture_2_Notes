@@ -92,11 +92,7 @@ fun NoteListScreen(navController: NavController,
             items(noteList) { item ->
                 ListItem(
                     leadingContent = {
-                        Checkbox(
-                            checked = item.check.value,
-                            onCheckedChange = {
-                                item.check.value = !item.check.value
-                        })},
+                        },
                     headlineContent = { Text(
                         item.title,
                         maxLines = 1,
